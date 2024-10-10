@@ -2,7 +2,6 @@
 <html lang="es">
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,
 		<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'>
@@ -16,6 +15,7 @@
 		<circle cx='400' cy='473.205' r='100' fill='rgb(240, 132, 143)' class='cs'/>
 		<circle cx='200' cy='473.205' r='100' fill='rgb(0, 166, 220)' class='cs'/> 
 		</svg>">
+    <title>Presiona</title>
     <style>
       html, body {
         margin: 0;
@@ -52,7 +52,7 @@ let ventanas = {};
 let visibles = {};
 let posicion;
 
-let flagCreditos, evitarClick;
+let flagCreditos, flagSalir;
 let cFondo, cTexto, cHiper;
 let symb = ["!", "?", ",", ".", ":", "-", ")", "]", "'"];
 let sep;
@@ -72,8 +72,8 @@ function setup() {
   
   strokeCap(SQUARE);
   sep = width / 90;
-  evitarClick = false;
   flagCreditos = false;
+  flagSalir = false;
   
   cFondo = color(CLR_FONDO[0], CLR_FONDO[1], CLR_FONDO[2]);
   cTexto = color(CLR_TEXTO[0], CLR_TEXTO[1], CLR_TEXTO[2]);
@@ -100,7 +100,7 @@ function setup() {
     new Ventana("\"", "en todas partes", "\""),
     new Ventana("Estoy", "aburrido", ""),
     new Ventana("del", "silencio", "."),
-    new Ventana("¿Juguemos?"),
+    new Ventana("¿¿¿Juguemos???"),
   ];
   
   visibles = [];
@@ -128,8 +128,7 @@ function draw() {
       }
       else visibles[i].btn = false;
 
-      if (visibles[i].sobreBrr(mouseX, mouseY) &&
-      pasoBrr.includes(i)) {
+      if (pasoBrr.includes(i)) {
         visibles[i].brr = true;
         visibles[i].cambiar(mouseX, mouseY);
         saltar = true;
@@ -148,6 +147,18 @@ function draw() {
   for (let i = 0; i < visibles.length; i++) {
     visibles[i].render();
   }
+
+  if (flagSalir) {
+    push();
+    fill(cFondo);
+    stroke(cTexto);
+    strokeWeight(2);
+    rect(220, 10, 100, 36, 18);
+    noStroke();
+    fill(cTexto);
+    text("salir", 247, 34);
+    pop();
+  } 
 }
 
 ////////////////////////////////////////////
@@ -336,16 +347,26 @@ class Ventana {
 let pasoHip;
 let pasoBtn = [];
 let pasoBrr = [];
+let evitarClickS = false;
+let evitarClickE = false;
 
 function touchStarted() {
   
-  if (evitarClick) return;
-  evitarClick = true;
+  if (evitarClickS) return;
+  evitarClickS = true;
   setTimeout(function() {
-    evitarClick = false;
+    evitarClickS = false;
   }, 200);
   
-  if (visibles.length == 0) {
+  if (
+    flagSalir &&
+    mouseX > 220 &&
+    mouseX < 320 &&
+    mouseY > 10 &&
+    mouseY < 46
+  ) clickCerrarFs();
+
+  if (visibles.length === 0) {
     if (
       mouseX > 270 &&
       mouseY > (480 - textSize()) &&
@@ -354,9 +375,8 @@ function touchStarted() {
     ) {
       posicion++;
       visibles.push(ventanas[posicion])
-      clickAbrirFs();
-      return;
     }
+    return;
   }
   
   if (visibles[visibles.length - 1].sobreHip(mouseX, mouseY)) {
@@ -384,12 +404,29 @@ function touchStarted() {
 ////////////////////////////////////////////
 
 function touchEnded() {
+
+  if (evitarClickE) return;
+  evitarClickE = true;
+  setTimeout(function() {
+    evitarClickE = false;
+  }, 200);
   
+  if (
+    flagSalir &&
+    mouseX > 220 &&
+    mouseX < 320 &&
+    mouseY > 10 &&
+    mouseY < 46
+  ) return;
+  
+  if (visibles.length === 0) return;
+
   if (visibles[visibles.length - 1].sobreHip(mouseX, mouseY) &&
   (visibles.length - 1) === pasoHip) {
     posicion++;
     visibles.push(ventanas[posicion])
     visibles[visibles.length - 1].hip = false;
+    if (posicion === 1) clickAbrirFs();
     if (posicion === 20) {
       setTimeout(() => {
         visibles = [];
@@ -496,12 +533,14 @@ function clickCerrarFs() {
 function cambiarHaciaAbierta() {
 	document.querySelector("body").style.width = "100svw";
 	document.querySelector("body").style.height = "100svh";
+  flagSalir = true;
 }
 
 // consecuencias de cerrar
 function cambiarHaciaCerrada() {
 	document.querySelector("body").style.width = "100svw";
 	document.querySelector("body").style.height = "100svh";
+  flagSalir = false;
 }
 
 
@@ -529,7 +568,7 @@ document.addEventListener("fullscreenchange", eventoCambioFs); // CHR y FFX
 document.addEventListener("webkitfullscreenchange", eventoCambioFs); // SFI
 
 // escuchar error de fullscreen
-document.addEventListener('fullscreenerror', (e) => console.log("E_2\n" + e));
+document.addEventListener('fullscreenerror', (e) => console.log(`E_2\n ${e}`));
 
 
     </script>
