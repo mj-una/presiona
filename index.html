@@ -19,7 +19,7 @@
     <style>
     @font-face {
       font-family: 'Times New Roman';
-      src: url('https://tu-usuario.github.io/presiona/times.ttf') format('ttf');
+      src: url('https://mj-una.github.io/presiona/times.ttf') format('ttf');
       font-weight: normal;
       font-style: normal;
     }
@@ -43,13 +43,8 @@
 
 /*
 
-cc0 - al dominio publico
-
 referencia visual: primavera.html por belen gache
 https://belengache.net/gongorawordtoys/primavera/primavera.html
-
-tipografia: dejavu serif
-https://dejavu-fonts.github.io/
 
 */
 
@@ -75,7 +70,7 @@ function setup() {
   
   frameRate(30);
   
-  textFont("Times New Roman, times.ttf, serif");
+  textFont("Times New Roman");
   textStyle(BOLD);
   textSize(26);
   
@@ -149,7 +144,6 @@ function draw() {
         visibles[i].hip = true;
         saltar = true;
       }
-      else visibles[i].Hip = false;
     }
   }
   
@@ -445,6 +439,10 @@ function touchEnded() {
       }, 3000);
     }
     console.log("sale Hip " + posicion);
+    if (visibles.length - 1 === 0) return;
+    for (let i = 0; i < visibles.length - 2; i++) {
+      visibles[i].hip = true;
+    }
     return;
   }
   
@@ -453,9 +451,13 @@ function touchEnded() {
       const indexBtn = pasoBtn.indexOf(i);
       if (indexBtn !== -1) {
         pasoBtn.splice(indexBtn, 1);
+        // visibles[i - 1].hip = true;
         visibles[i].btn = false;
-        visibles.splice(i, 1);
         //console.log("sale Btn " + i);
+        if (indexBtn === visibles.length - 1) {
+          visibles[visibles.length - 2].hip = false;
+        }
+        visibles.splice(i, 1);
         return;
       }
     }
