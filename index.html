@@ -385,7 +385,8 @@ function touchStarted() {
       mouseY < (480 + sep)
     ) {
       posicion++;
-      visibles.push(ventanas[posicion])
+      visibles.push(ventanas[posicion]);
+      visibles[0].hip = false;
     }
     return;
   }
