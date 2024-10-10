@@ -17,6 +17,12 @@
 		</svg>">
     <title>Presiona</title>
     <style>
+    @font-face {
+      font-family: 'Times New Roman';
+      src: url('https://tu-usuario.github.io/presiona/times.ttf') format('ttf');
+      font-weight: normal;
+      font-style: normal;
+    }
       html, body {
         margin: 0;
         padding: 0;
@@ -39,8 +45,11 @@
 
 cc0 - al dominio publico
 
-referencia visual:
+referencia visual: primavera.html por belen gache
 https://belengache.net/gongorawordtoys/primavera/primavera.html
+
+tipografia: dejavu serif
+https://dejavu-fonts.github.io/
 
 */
 
@@ -66,7 +75,7 @@ function setup() {
   
   frameRate(30);
   
-  textFont("Times New Roman");
+  textFont("Times New Roman, times.ttf, serif");
   textStyle(BOLD);
   textSize(26);
   
