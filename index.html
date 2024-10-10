@@ -156,7 +156,8 @@ function draw() {
     rect(220, 10, 100, 36, 18);
     noStroke();
     fill(cTexto);
-    text("salir", 247, 34);
+    textAlign(CENTER, CENTER);
+    text("salir", 247+textWidth("salir")/2, 34-textSize()*0.2);
     pop();
   } 
 }
@@ -169,9 +170,7 @@ function portada(creditos) {
   fill(cHiper);
   if (!creditos) text("aqui", 270, 480);
   else {
-    text("aqui", 270, 480);
-    fill(cTexto);
-    text(":", 320, 480);
+    text("aqui:", 270, 480);
   }
   push();
   stroke(cHiper);
