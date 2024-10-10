@@ -51,7 +51,7 @@ let visibles = {};
 let posicion;
 
 let flagCreditos, flagSalir;
-let cFondo, cTexto, cHiper;
+let cFondo, cTexto, cHiper, cFondoT;
 let symb = ["!", "?", ",", ".", ":", "-", ")", "]", "'"];
 let sep;
 let tmr;
@@ -89,6 +89,7 @@ function setup() {
   flagSalir = false;
   
   cFondo = color(CLR_FONDO[0], CLR_FONDO[1], CLR_FONDO[2]);
+  cFondoT = color(10, 50);
   cTexto = color(CLR_TEXTO[0], CLR_TEXTO[1], CLR_TEXTO[2]);
   cHiper = color(CLR_HIPER[0], CLR_HIPER[1], CLR_HIPER[2]);
   
@@ -276,10 +277,9 @@ class Ventana {
     stroke(cTexto);
     strokeWeight(2);
     rect(this.pX, this.pY, this.pW, this.pH, this.pH / 5);
-    if (this.brr) {
-      fill(cTexto);
-      rect(this.pX, this.pY, this.pW, this.pH * 0.35, this.pH / 5, this.pH / 5, 0, 0);
-    }
+    if (this.brr) fill(cTexto);
+    else fill(cFondoT);
+    rect(this.pX, this.pY, this.pW, this.pH * 0.35, this.pH / 5, this.pH / 5, 0, 0);
     line(this.pX, this.pY + this.pH * 0.35, this.pX + this.pW, this.pY + this.pH * 0.35);
     fill(cFondo);
     if (this.btn) fill(cTexto);
