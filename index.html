@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,
+		<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'>
+		<style> .cs { stroke: rgb(9, 9, 9); stroke-width: 10; } </style>
+		<circle cx='300' cy='300' r='300' fill='rgb(150, 202, 150)' class='cs'/>
+		<circle cx='300' cy='300' r='100' fill='rgb(255, 217, 121)' class='cs'/>
+		<circle cx='100' cy='300' r='100' fill='rgb(240, 132, 143)' class='cs'/>
+		<circle cx='500' cy='300' r='100' fill='rgb(0, 166, 220)' class='cs'/>
+		<circle cx='400' cy='126.795' r='100' fill='rgb(240, 132, 143)' class='cs'/>
+		<circle cx='200' cy='126.795' r='100' fill='rgb(0, 166, 220)' class='cs'/>
+		<circle cx='400' cy='473.205' r='100' fill='rgb(240, 132, 143)' class='cs'/>
+		<circle cx='200' cy='473.205' r='100' fill='rgb(0, 166, 220)' class='cs'/> 
+		</svg>">
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        width: 100svw;
+        height: 100vh;
+        height: 100svh;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+    </main>
+    <script>
+
+/*
+
+cc0 - al dominio publico
+
+referencia visual:
+https://belengache.net/gongorawordtoys/primavera/primavera.html
+
+*/
+
+const CLR_FONDO = [ 250, 230, 10 ]; 
+const CLR_TEXTO = [ 10, 10, 10 ]; 
+const CLR_HIPER = [ 40, 50, 255 ]; 
+
+let ventanas = {};
+let visibles = {};
+let posicion;
+
+let flagCreditos, evitarClick;
+let cFondo, cTexto, cHiper;
+let symb = ["!", "?", ",", ".", ":", "-", ")", "]", "'"];
+let sep;
+
+////////////////////////////////////////////
+
+function setup() {
+  createCanvas(540, 960);
+  windowResized();
+  background(200, 250, 50);
+  
+  frameRate(30);
+  
+  textFont("Times New Roman");
+  textStyle(BOLD);
+  textSize(26);
+  
+  strokeCap(SQUARE);
+  sep = width / 90;
+  evitarClick = false;
+  flagCreditos = true;
+  
+  cFondo = color(CLR_FONDO[0], CLR_FONDO[1], CLR_FONDO[2]);
+  cTexto = color(CLR_TEXTO[0], CLR_TEXTO[1], CLR_TEXTO[2]);
+  cHiper = color(CLR_HIPER[0], CLR_HIPER[1], CLR_HIPER[2]);
+  
+  ventanas = [
+    new Ventana("Si no", "presionas", "no pasa nada."),
+    new Ventana("Si no", "preguntas", "no aprendes."),
+    new Ventana("Si no", "molestas", "no existis."),
+    new Ventana("", "Tenia", "que dormir..."),
+    new Ventana("...pero me quedé", "pensando", "..."),
+    new Ventana("¿Lo de ayer fue", "causa"),
+    new Ventana("o", "consecuencia", "?"),
+    new Ventana("", "Digo", ","),
+    new Ventana("", "esto", "lo conocemos"),
+    new Ventana("porque", "es parte", "de la rutina."),
+    new Ventana("¿Qué", "sabemos", "hacer?"),
+    new Ventana("¿Qué", "hacemos", "todos los dias?"),
+    new Ventana("Lo mas dificil de", "ver", ""),
+    new Ventana("es lo que está", "demasiado cerca", "."),
+    new Ventana("Me", "imagino", "este dialogo:"),
+    new Ventana("\" Hola", "tomates", "del mundo, \""),
+    new Ventana("\" los aliens", "existen", "\""),
+    new Ventana("\"", "en todas partes", "\""),
+    new Ventana("Estoy", "aburrido", ""),
+    new Ventana("del", "silencio", "."),
+    new Ventana("¿Juguemos?"),
+  ];
+  
+  visibles = [];
+  posicion = -1;
+}
+
+////////////////////////////////////////////
+
+function draw() {
+  background(cFondo);
+
+  if (visibles.length === 0) {
+    portada(flagCreditos);
+    return;
+  }
+    
+  let saltar = false;
+  for (let i = visibles.length - 1; i >= 0; i--) {
+
+    if (mouseIsPressed && !saltar) {
+      if (visibles[i].sobreBtn(mouseX, mouseY) &&
+      pasoBtn.includes(i)) {
+        visibles[i].btn = true;
+        saltar = true;
+      }
+      else visibles[i].btn = false;
+
+      if (visibles[i].sobreBrr(mouseX, mouseY) &&
+      pasoBrr.includes(i)) {
+        visibles[i].brr = true;
+        visibles[i].cambiar(mouseX, mouseY);
+        saltar = true;
+      }
+      else visibles[i].brr = false;
+
+      if (visibles[i].sobreHip(mouseX, mouseY) &&
+      pasoHip === i) {
+        visibles[i].hip = true;
+        saltar = true;
+      }
+      else visibles[i].Hip = false;
+    }
+  }
+  
+  for (let i = 0; i < visibles.length; i++) {
+    visibles[i].render();
+  }
+}
+
+////////////////////////////////////////////
+
+function portada(creditos) {
+  fill(cTexto);
+  text("Presiona ", 270 - textWidth("Presiona "), 480);
+  fill(cHiper);
+  if (!creditos) text("aqui", 270, 480);
+  else {
+    text("aqui", 270, 480);
+    fill(cTexto);
+    text(":", 320, 480);
+  }
+  push();
+  stroke(cHiper);
+  strokeWeight(sep / 2);
+  line(270, 480 + sep, 270 + textWidth("aqui"), 480 + sep);
+  pop();
+  if (creditos) {
+    fill(cTexto);
+    push();
+    textAlign(CENTER, CENTER);
+    textSize(18);
+    text("Quilmes", 270, 750);
+    text("10-10-24", 270, 770);
+    text("referencia:", 270, 810);
+    text("primavera.html en \"Gongora Wordtoys\" por Belen Gache", 270, 830);
+
+    text("https://belengache.net/gongorawordtoys/primavera/primavera.html", 270, 850);
+    fill(cTexto);
+
+    translate(270, 880);
+    push();
+    rotate(-0.9);
+    text("gracias", -70, -30);
+    pop()
+    push();
+    rotate(0.9);
+    text("Yaqui", 60, -20);
+    pop()
+    // rotate(PI / 2);
+    
+    resetMatrix();
+    
+    push();
+    textSize(20)
+    translate(290, 120);
+    rotate(0.3);
+    text("no\nmenospreciemos", 0, 0);
+    pop();
+    
+    push();
+    textSize(40)
+    translate(300, 220);
+    rotate(-0.1);
+    text("lo que         \nsabemos hacer", 0, 0);
+    pop();
+    
+    push();
+    translate(400, 478);
+    text("la tecnicatura", 0, 0);
+    text("es nuestra", -10, 20);
+    rotate(0.1);
+    textSize(20);
+    text("defendamosla", 20, 60);
+    pop();
+    
+    pop();
+  }
+}
+
+////////////////////////////////////////////
+
+class Ventana {
+  constructor(t1 = "", hv = "", t2 = "") {
+    this.t1 = t1;
+    if (this.t1[this.t1.length - 1] !== " ") this.t1 += " ";
+    this.hv = hv;
+    this.t2 = t2;
+    if (!symb.includes(this.t2[0])) this.t2 = " " + this.t2;
+    this.texto = t1 + hv + t2;
+    
+    this.mX = 40;
+    this.mY = 58;
+    this.pX = random(0, width - (textWidth(this.texto) + this.mX * 2));
+    this.pY = random(0, height - (textSize() + this.mY * 2.4));
+    this.pW = textWidth(this.texto) + this.mX * 2;
+    this.pH = textSize() + this.mY * 2.4;
+    this.tX = this.pX + this.mX;
+    this.tY = this.pY + this.mY * 1.8;
+    
+    this.btn = false;
+    this.brr = false;
+    this.hip = false;
+    
+    this.dX = 0;
+    this.dY = 0;
+  }
+  
+  render() {
+    push();
+    fill(cFondo);
+    stroke(cTexto);
+    strokeWeight(2);
+    rect(this.pX, this.pY, this.pW, this.pH, this.pH / 5);
+    if (this.brr) {
+      fill(cTexto);
+      rect(this.pX, this.pY, this.pW, this.pH * 0.35, this.pH / 5, this.pH / 5, 0, 0);
+    }
+    line(this.pX, this.pY + this.pH * 0.35, this.pX + this.pW, this.pY + this.pH * 0.35);
+    fill(cFondo);
+    if (this.btn) fill(cTexto);
+    translate(this.pX + (this.pW - this.pH * 0.19), this.pY + this.pH * 0.18);
+    circle(0, 0, this.pH * 0.21);
+    rotate(PI);
+    line(8, 8, -8, -8);
+    line(-8, 8, 8, -8);
+    pop();
+    
+    push();
+    fill(cTexto);
+    text(this.t1, this.tX, this.tY);
+      push();
+      fill(cHiper);
+      if (this.hip) fill(cTexto);
+      text(this.hv, this.tX + textWidth(this.t1), this.tY);
+      stroke(cHiper);
+      if (this.hip) stroke(cTexto);
+      if (this.hv === "") stroke(0, 0);
+      strokeWeight(sep / 2);
+      line(this.tX + textWidth(this.t1), this.tY + sep,
+        this.tX + textWidth(this.t1 + this.hv), this.tY + sep);
+      pop();
+    text(this.t2, this.tX + textWidth(this.t1 + this.hv), this.tY);
+    pop();
+  }
+  
+  sobreBtn(mX, mY) {
+    if (dist(this.pX + (this.pW - this.pH * 0.19), this.pY + this.pH * 0.18,
+      mX, mY) < this.pH * 0.12) return true;
+    else return false;
+  }
+  
+  sobreBrr(mX, mY) {
+    if (
+      mX > this.pX &&
+      mY > this.pY &&
+      mX < (this.pX + this.pW) &&
+      mY < (this.pY + this.pH * 0.35)
+    ) return true;
+    else return false;
+  }
+  
+  sobreVen(mX, mY) {
+    if (
+      mX > this.pX &&
+      mY > this.pY &&
+      mX < (this.pX + this.pW) &&
+      mY < (this.pY + this.pH)
+    ) return true;
+    else return false;
+  }
+  
+  sobreHip(mX, mY) {
+    if (
+      mX > (this.tX + textWidth(this.t1)) &&
+      mY > (this.tY - textSize()) &&
+      mX < (this.tX + textWidth(this.t1 + this.hv)) &&
+      mY < (this.tY + sep)
+    ) return true;
+    else return false;
+  }
+  
+  cambiar(mX, mY) {
+    this.pX = mX - this.dX;
+    this.pY = mY - this.dY;
+    this.tX = this.pX + this.mX;
+    this.tY = this.pY + this.mY * 1.8;
+    this.render();
+  }
+}
+
+////////////////////////////////////////////
+
+let pasoHip;
+let pasoBtn = [];
+let pasoBrr = [];
+
+function touchStarted() {
+  
+  if (evitarClick) return;
+  evitarClick = true;
+  setTimeout(function() {
+    evitarClick = false;
+  }, 200);
+  
+  if (visibles.length == 0) {
+    if (
+      mouseX > 270 &&
+      mouseY > (480 - textSize()) &&
+      mouseX < (270 + textWidth("aqui")) &&
+      mouseY < (480 + sep)
+    ) {
+      posicion++;
+      visibles.push(ventanas[posicion])
+      clickAbrirFs();
+      return;
+    }
+  }
+  
+  if (visibles[visibles.length - 1].sobreHip(mouseX, mouseY)) {
+    pasoHip = visibles.length - 1;
+    //console.log("entra Hip ");
+    return;
+  }
+  
+  for (let i = visibles.length - 1; i >= 0; i--) {
+    if (visibles[i].sobreBtn(mouseX, mouseY)) {
+      pasoBtn.push(i);
+      //console.log("entra Btn " + i);
+      return;
+    }
+    if (visibles[i].sobreBrr(mouseX, mouseY)) {
+      pasoBrr.push(i);
+      visibles[i].dX = mouseX - visibles[i].pX;
+      visibles[i].dY = mouseY - visibles[i].pY;
+      //console.log("entra Brr " + i);
+      return;
+    }
+  }
+}
+
+////////////////////////////////////////////
+
+function touchEnded() {
+  
+  if (visibles[visibles.length - 1].sobreHip(mouseX, mouseY) &&
+  (visibles.length - 1) === pasoHip) {
+    posicion++;
+    visibles.push(ventanas[posicion])
+    visibles[visibles.length - 1].hip = false;
+    if (posicion === 20) {
+      setTimeout(() => {
+        visibles = [];
+        posicion = -1;
+        background(cFondo);
+        flagCreditos = true;
+        clickCerrarFs();
+      }, 3000);
+    }
+    console.log("sale Hip " + posicion);
+    return;
+  }
+  
+  for (let i = visibles.length - 1; i >= 0; i--) {
+    if (visibles[i].sobreBtn(mouseX, mouseY)) {
+      const indexBtn = pasoBtn.indexOf(i);
+      if (indexBtn !== -1) {
+        pasoBtn.splice(indexBtn, 1);
+        visibles[i].btn = false;
+        visibles.splice(i, 1);
+        //console.log("sale Btn " + i);
+        return;
+      }
+    }
+    if (visibles[i].sobreBrr(mouseX, mouseY)) {
+      const indexBrr = pasoBrr.indexOf(i);
+      if (indexBrr !== -1) {
+        pasoBrr.splice(indexBrr, 1);
+        visibles[i].brr = false;
+        //console.log("sale Brr " + i);
+        return;
+      }
+    }
+  }
+}
+
+////////////////////////////////////////////
+
+function windowResized() {
+  
+  let pag = document.getElementsByTagName("body")[0];
+  let cnv = document.getElementById("defaultCanvas0");
+  
+  // margen <== EDITABLE porcentaje entre 0% y 50%
+  let mrg = 3; 
+  
+  // color de fondo <== EDITABLE pero mejor es hacerlo en css
+  pag.style.backgroundColor = `rgb(${CLR_FONDO[0]}, ${CLR_FONDO[1]}, ${CLR_FONDO[2]})`;
+  
+  pag.style.overflow = "hidden";
+  pag.style.display = "flex";
+  pag.style.justifyContent = "center";
+  pag.style.alignItems = "center";
+  pag.style.height = "100svh";
+ 
+  if (windowWidth * height > windowHeight * width) {
+    cnv.style.height = (100 - mrg * 2) + "svh";
+    cnv.style.width = ((100 - mrg * 2) / height) * width + "svh";
+  }
+  else {
+    cnv.style.width = (100 - mrg * 2) + "vw";
+    cnv.style.height = ((100 - mrg * 2) / width) * height + "vw";
+  }
+}
+
+///////////////////////////////////////////////////////////////
+// ENVIAR SOLICITUD
+
+// click abrir fullscreen
+function clickAbrirFs() {
+	console.log("S_clickAbrirFs");
+
+	if (document.documentElement.requestFullscreen) { // CHR
+		document.documentElement.requestFullscreen().then(() => {
+		}).catch((e) => console.log("E_1.1\n" + e));
+	}
+	else if (document.documentElement.webkitRequestFullscreen) { // SFI
+		document.documentElement.webkitRequestFullscreen().then(() => {
+		}).catch((e) => console.log("E_1.2\n" + e));
+	}
+	else if (document.documentElement.mozRequestFullScreen) { // FFX
+		document.documentElement.mozRequestFullScreen().then(() => {
+		}).catch((e) => console.log("E_1.3\n" + e));
+	}
+}
+
+// click cerrar fullscreen
+function clickCerrarFs() {
+	console.log("S_clickCerrarFs");
+
+	if (document.exitFullscreen)
+		document.exitFullscreen(); // CHR
+	else if (document.webkitExitFullscreen)
+		document.webkitExitFullscreen(); // SFI
+	else if (document.mozCancelFullScreen)
+		document.mozCancelFullScreen(); // FFX
+}
+
+
+///////////////////////////////////////////////////////////////
+// SOLICITUD EJECUTADA
+
+// consecuencias de abrir fullscreen
+function cambiarHaciaAbierta() {
+	document.querySelector("body").style.width = "100svw";
+	document.querySelector("body").style.height = "100svh";
+}
+
+// consecuencias de cerrar
+function cambiarHaciaCerrada() {
+	document.querySelector("body").style.width = "100svw";
+	document.querySelector("body").style.height = "100svh";
+}
+
+
+///////////////////////////////////////////////////////////////
+// EVENTOS
+
+// callback cambio estado screen
+function eventoCambioFs() {
+	console.log("S_eventoCambioFs");
+
+  if ( // estaba abierta y se cerro
+    !document.fullscreenElement && // CHR
+    !document.webkitFullscreenElement && // SFI
+    !document.mozFullScreenElement // FFX
+  ) {
+    cambiarHaciaCerrada();
+  }
+	else { // estaba cerrada y se abrio
+    cambiarHaciaAbierta();
+  }
+}
+
+// escuchar cambio de fullscreen
+document.addEventListener("fullscreenchange", eventoCambioFs); // CHR y FFX
+document.addEventListener("webkitfullscreenchange", eventoCambioFs); // SFI
+
+// escuchar error de fullscreen
+document.addEventListener('fullscreenerror', (e) => console.log("E_2\n" + e));
+
+
+    </script>
+  </body>
+</html>
