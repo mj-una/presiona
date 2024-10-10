@@ -17,12 +17,6 @@
 		</svg>">
     <title>Presiona</title>
     <style>
-    @font-face {
-      font-family: 'Times New Roman';
-      src: url('https://mj-una.github.io/presiona/times.ttf') format('ttf');
-      font-weight: normal;
-      font-style: normal;
-    }
       html, body {
         margin: 0;
         padding: 0;
@@ -60,6 +54,19 @@ let flagCreditos, flagSalir;
 let cFondo, cTexto, cHiper;
 let symb = ["!", "?", ",", ".", ":", "-", ")", "]", "'"];
 let sep;
+let tmr;
+
+////////////////////////////////////////////
+
+function preload() {
+  tmr = loadFont('https://mj-una.github.io/presiona/times.ttf', 
+        () => {
+            console.log('fuente okiii');
+        }, (err) => {
+            console.error('fuente no:', err);
+        }
+    );
+}
 
 ////////////////////////////////////////////
 
@@ -70,7 +77,9 @@ function setup() {
   
   frameRate(30);
   
-  textFont("Times New Roman");
+  // textFont("Times New Roman");
+  textFont(tmr);
+
   textStyle(BOLD);
   textSize(26);
   
@@ -454,8 +463,9 @@ function touchEnded() {
         // visibles[i - 1].hip = true; // amimir
         visibles[i].btn = false;
         //console.log("sale Btn " + i);
-        if (indexBtn === visibles.length - 1) {
+        if (i === (visibles.length - 1) && visibles.length >= 2) {
           visibles[visibles.length - 2].hip = false;
+          posicion--;
         }
         visibles.splice(i, 1);
         return;
